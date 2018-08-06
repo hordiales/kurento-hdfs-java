@@ -1,5 +1,4 @@
-[Kurento](https://kurento.org)
- JAVA examples working with a HDFS (Hadoop Distributed File System)
+[Kurento](https://kurento.org) JAVA examples working with a HDFS (Hadoop Distributed File System). Using .webm video files (Google VP8 codec).
 
 Based on kurento-tutorial examples.
 
@@ -17,6 +16,8 @@ In application.properties:
 
 
 ## Webm player from hdfs
+
+WARNING: This example requires server and client running in the same computer
 
 	$ cd kurento-player-from-hdfs/
 	$ sudo mvn -U clean spring-boot:run -Dkms.url=ws://$KURENTO_SERVER:8888/kurento
