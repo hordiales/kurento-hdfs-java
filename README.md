@@ -1,3 +1,31 @@
+
+kurento working with a HDFS
+
+
+# Server start
+hordia@actastest:~/docker-hadoop$ sudo /etc/init.d/kurento-media-server start
+
+# Client start
+
+hordia@msc005:~/dev/videoconf-audiencias/kurento-record-remote-video-in-dfs/kurento-remote-dfs-recording$ sudo mvn -U clean spring-boot:run -
+Dkms.url=ws://actastest:8888/kurento
+
+
+# Client app in browser
+https://localhost:8443/
+
+	<properties>
+		<demo.port>8443</demo.port>
+		<start-class>org.kurento.tutorial.player.PlayerApp</start-class>
+	</properties>
+
+
+# TODO
+* SSL security
+
+From ...
+
+
 [![License badge](https://img.shields.io/badge/license-Apache2-orange.svg)](http://www.apache.org/licenses/LICENSE-2.0)
 [![Documentation badge](https://readthedocs.org/projects/fiware-orion/badge/?version=latest)](https://doc-kurento.readthedocs.io)
 [![Docker badge](https://img.shields.io/docker/pulls/fiware/orion.svg)](https://hub.docker.com/r/fiware/stream-oriented-kurento/)

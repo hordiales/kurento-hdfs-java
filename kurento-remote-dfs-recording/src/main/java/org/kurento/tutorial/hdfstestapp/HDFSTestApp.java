@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.kurento.tutorial.helloworld;
+package org.kurento.tutorial.hdfstestapp;
 
 import org.kurento.client.KurentoClient;
 import org.springframework.boot.SpringApplication;
@@ -24,7 +24,7 @@ import org.springframework.web.socket.config.annotation.WebSocketConfigurer;
 import org.springframework.web.socket.config.annotation.WebSocketHandlerRegistry;
 
 /**
- * Hello World (WebRTC in loopback with recording) main class.
+ * Based in Hello World (WebRTC in loopback with recording) main class.
  *
  * @author Ivan Gracia (igracia@kurento.org)
  * @author Boni Garcia (bgarcia@gsyc.es)
@@ -32,7 +32,7 @@ import org.springframework.web.socket.config.annotation.WebSocketHandlerRegistry
  */
 @SpringBootApplication
 @EnableWebSocket
-public class HelloWorldRecApp implements WebSocketConfigurer {
+public class HDFSTestApp implements WebSocketConfigurer {
 
   @Bean
   public HelloWorldRecHandler handler() {
@@ -55,6 +55,6 @@ public class HelloWorldRecApp implements WebSocketConfigurer {
   }
 
   public static void main(String[] args) throws Exception {
-    SpringApplication.run(HelloWorldRecApp.class, args);
+    SpringApplication.run(HDFSTestApp.class, args);
   }
 }

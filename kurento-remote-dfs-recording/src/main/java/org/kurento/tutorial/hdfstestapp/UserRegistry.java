@@ -14,7 +14,7 @@
  * limitations under the License.
  *
  */
-package org.kurento.tutorial.helloworld;
+package org.kurento.tutorial.hdfstestapp;
 
 import java.util.concurrent.ConcurrentHashMap;
 

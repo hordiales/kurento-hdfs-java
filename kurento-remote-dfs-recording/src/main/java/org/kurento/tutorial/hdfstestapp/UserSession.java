@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.kurento.tutorial.helloworld;
+package org.kurento.tutorial.hdfstestapp;
 
 import java.util.Date;
 import java.util.concurrent.CountDownLatch;

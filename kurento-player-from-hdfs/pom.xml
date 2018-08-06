@@ -9,18 +9,19 @@
 		<artifactId>kurento-tutorial</artifactId>
 		<version>6.7.2-SNAPSHOT</version>
 	</parent>
-	<artifactId>kurento-dfs-recording</artifactId>
+	
+	<artifactId>kurento-player-from-hdfs</artifactId>
 	<packaging>jar</packaging>
 
 	<!-- Project-level information -->
-	<name>Kurento recording in HDFS</name>
-	<description>WebRTC in loopback with Recording in a remote Hadoop Filesystem (HDFS)</description>
+	<name>Kurento Java Tutorial - Player</name>
+	<description>Play of a video through WebRTC</description>
 
 	<!-- Project configuration -->
 
 	<properties>
 		<demo.port>8443</demo.port>
-		<start-class>org.kurento.tutorial.hdfstestapp.HDFSTestApp</start-class>
+		<start-class>org.kurento.tutorial.player.PlayerApp</start-class>
 	</properties>
 
 	<dependencies>
@@ -76,6 +77,25 @@
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
+				<configuration>
+					<mainClass>${start-class}</mainClass>
+					<layout>ZIP</layout>
+					<classifier>exec</classifier>
+				</configuration>
+				<executions>
+					<execution>
+						<goals>
+							<goal>repackage</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>exec-maven-plugin</artifactId>
+				<configuration>
+					<mainClass>${start-class}</mainClass>
+				</configuration>
 			</plugin>
 		</plugins>
 
@@ -143,5 +163,4 @@
 			<id>no-assembly</id>
 		</profile>
 	</profiles>
-
 </project>
