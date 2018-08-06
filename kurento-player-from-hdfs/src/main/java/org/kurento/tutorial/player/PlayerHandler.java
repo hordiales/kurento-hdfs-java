@@ -17,7 +17,10 @@
 
 package org.kurento.tutorial.player;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.net.URI;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.kurento.client.EndOfStreamEvent;
@@ -37,6 +40,8 @@ import org.kurento.jsonrpc.JsonUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.PropertySource;
+import org.springframework.core.env.Environment;
 import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
@@ -46,16 +51,32 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 
+import org.apache.commons.io.IOUtils;
+import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.fs.FSDataInputStream;
+import org.apache.hadoop.fs.FSDataOutputStream;
+import org.apache.hadoop.fs.FileSystem;
+import org.apache.hadoop.fs.Path;
+
 /**
- * Protocol handler for video player through WebRTC.
+ * WARNING: This example requires server and client running in the same computer
+ * 
+ * Mod from Protocol handler for video player through WebRTC.
  *
  * @author Boni Garcia (bgarcia@gsyc.es)
  * @author David Fernandez (dfernandezlop@gmail.com)
  * @author Ivan Gracia (igracia@kurento.org)
  * @since 6.1.1
  */
+@PropertySource("classpath:application.properties")
 public class PlayerHandler extends TextWebSocketHandler {
 
+  //Path en donde corre el video server
+  private static final String TMP_FILE_PATH = "/tmp/kurento_hdfs.webm";
+  
+  @Autowired
+  private Environment env;
+  
   @Autowired
   private KurentoClient kurento;
 
@@ -102,18 +123,87 @@ public class PlayerHandler extends TextWebSocketHandler {
     }
   }
 
+  public void hadoopFileRead(String user, String path, String fileName) throws Exception {
+	  
+	  
+	    String hdfsuri = "hdfs://"+env.getProperty("hadoop.fs.uri") ;
+	    log.info( "Hadoop FS uri: " + hdfsuri );
+
+	    Configuration conf = new Configuration(); //Init HDFS File System Object
+	    conf.set("fs.defaultFS", hdfsuri); // Set FileSystem URI
+	    conf.set("fs.hdfs.impl", org.apache.hadoop.hdfs.DistributedFileSystem.class.getName());
+	    conf.set("fs.file.impl", org.apache.hadoop.fs.LocalFileSystem.class.getName());
+	    // Set HADOOP user
+	    System.setProperty("HADOOP_USER_NAME", user);
+	    System.setProperty("hadoop.home.dir", "/");
+	    FileSystem fs = FileSystem.get(URI.create(hdfsuri), conf); //Get the filesystem - HDFS
+	    Path newFolderPath= new Path(path);
+	    
+	    //Create a path
+	    Path hdfsreadpath = new Path(newFolderPath + "/" + fileName);
+	    //Init input stream
+	    
+	    FSDataInputStream inputStream = fs.open(hdfsreadpath);
+	    
+	    //show content
+	    //String out= IOUtils.toString(inputStream, "UTF-8");
+	    //log.info(out);
+	    
+	    //WARNING: Server and client must to be running in the same computer
+	    byte[] bs = new byte[inputStream.available()];
+	    inputStream.read(bs);
+	    //log.info(new String(bs)); //content
+	    FileOutputStream fileOutputStream = new FileOutputStream(new File(TMP_FILE_PATH));
+        //IOUtils.write(bs, fileOutputStream);
+        //IOUtils.closeQuietly(fileOutputStream);
+        
+        fileOutputStream.write(bs);
+        fileOutputStream.flush();
+        fileOutputStream.close();
+        
+	    inputStream.close();
+	    fs.close();
+  }
+  
+  /*
+   * Working examples:
+   *    "file:///tmp/HelloWorldRecorded.webm"; //plays local file
+   *    "https://dl3.webmfiles.org/big-buck-bunny_trailer.webm"; //plays web file
+   *    "hdfs://hello.webm" //reads from Hadoop Distributed file system, asummes files in /user/hdfs/ path
+  */
   private void start(final WebSocketSession session, JsonObject jsonMessage) {
     // 1. Media pipeline
     final UserSession user = new UserSession();
     MediaPipeline pipeline = kurento.createMediaPipeline();
     user.setMediaPipeline(pipeline);
     WebRtcEndpoint webRtcEndpoint = new WebRtcEndpoint.Builder(pipeline).build();
-    user.setWebRtcEndpoint(webRtcEndpoint);
+    user.setWebRtcEndpoint(webRtcEndpoint);    
+    
     String videourl = jsonMessage.get("videourl").getAsString();
+    log.info("Video url: "+videourl);
+    
+    log.info("Substring: "+videourl.substring(0,7));
+    if ( videourl.substring(0,7).equals("hdfs://") ) {
+    	log.info("Hadoop file!");
+    	
+    	String fileName = videourl.substring(7);
+    	log.info("File: "+fileName);
+        String hadoopUser = "hdfs";
+        String path = "/user/"+hadoopUser+"/"; //TODO: parece que para que funcione el archivo tiene que estar dentro del path del usuario
+        try {
+        	hadoopFileRead(hadoopUser, path, fileName);
+            videourl = "file://"+TMP_FILE_PATH;
+            log.info("New hadoop video url: "+videourl);
+        } catch  (Exception e) {
+        	log.error("Hadoop error");
+            log.debug(e.getMessage());
+        }
+    }
+  
     final PlayerEndpoint playerEndpoint = new PlayerEndpoint.Builder(pipeline, videourl).build();
     user.setPlayerEndpoint(playerEndpoint);
     users.put(session.getId(), user);
-
+    
     playerEndpoint.connect(webRtcEndpoint);
 
     // 2. WebRtcEndpoint

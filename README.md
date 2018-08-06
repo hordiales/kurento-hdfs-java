@@ -1,18 +1,36 @@
+[Kurento](https://kurento.org)
+ JAVA examples working with a HDFS (Hadoop Distributed File System)
 
-kurento working with a HDFS
+Based on kurento-tutorial examples.
+
+# Kurento server start
+
+	$ sudo /etc/init.d/kurento-media-server start
+
+# Kurento Clients
+
+## Setup Hadoop FS 
+
+In application.properties:
+
+	hadoop.fs.uri=$HD_FS_SERVER:8020
 
 
-# Server start
-hordia@actastest:~/docker-hadoop$ sudo /etc/init.d/kurento-media-server start
+## Webm player from hdfs
 
-# Client start
+	$ cd kurento-player-from-hdfs/
+	$ sudo mvn -U clean spring-boot:run -Dkms.url=ws://$KURENTO_SERVER:8888/kurento
 
-hordia@msc005:~/dev/videoconf-audiencias/kurento-record-remote-video-in-dfs/kurento-remote-dfs-recording$ sudo mvn -U clean spring-boot:run -
-Dkms.url=ws://actastest:8888/kurento
+## Stream record (i.e. webcam, etc) in a hdfs
 
+	$ cd kurento-record-remote-video-in-dfs
+	$ sudo mvn -U clean spring-boot:run -Dkms.url=ws://$KURENTO_SERVER:8888/kurento
 
-# Client app in browser
-https://localhost:8443/
+## Use the client app from a browser
+
+Go to https://localhost:8443/
+
+Config in pom.xml:
 
 	<properties>
 		<demo.port>8443</demo.port>
@@ -21,30 +39,12 @@ https://localhost:8443/
 
 
 # TODO
-* SSL security
 
-From ...
+* Add SSL security support
 
 
-[![License badge](https://img.shields.io/badge/license-Apache2-orange.svg)](http://www.apache.org/licenses/LICENSE-2.0)
-[![Documentation badge](https://readthedocs.org/projects/fiware-orion/badge/?version=latest)](https://doc-kurento.readthedocs.io)
-[![Docker badge](https://img.shields.io/docker/pulls/fiware/orion.svg)](https://hub.docker.com/r/fiware/stream-oriented-kurento/)
-[![Support badge]( https://img.shields.io/badge/support-sof-yellowgreen.svg)](https://stackoverflow.com/questions/tagged/kurento)
-
-[![][KurentoImage]][Kurento]
-
-Copyright 2018 [Kurento]. Licensed under [Apache 2.0 License].
-
-[Kurento]: https://kurento.org
-[KurentoImage]: https://secure.gravatar.com/avatar/21a2a12c56b2a91c8918d5779f1778bf?s=120
+# License
 [Apache 2.0 License]: http://www.apache.org/licenses/LICENSE-2.0
-
-
-
-Kurento Java tutorials
-======================
-
-Demo applications that showcase how to use the Kurento Java Client.
 
 
 
@@ -59,8 +59,6 @@ Kurento is part of [FIWARE]. For further information on the relationship of FIWA
 [Kurento FIWARE Catalog Entry]: http://catalogue.fiware.org/enablers/stream-oriented-kurento
 [NUBOMEDIA]: http://www.nubomedia.eu
 
-
-
 Documentation
 -------------
 
@@ -69,52 +67,3 @@ The Kurento project provides detailed [documentation] including tutorials, insta
 [documentation]: https://www.kurento.org/documentation
 [Open API specification]: http://kurento.github.io/doc-kurento/
 [apiary.io]: http://docs.streamoriented.apiary.io/
-
-
-
-Useful Links
-------------
-
-Usage:
-
-* [Installation Guide](http://doc-kurento.readthedocs.io/en/stable/user/installation.html)
-* [Compilation Guide](http://doc-kurento.readthedocs.io/en/stable/dev/dev_guide.html#developing-kms)
-* [Contribution Guide](http://doc-kurento.readthedocs.io/en/stable/project/contribute.html)
-
-Issues:
-
-* [Bug Tracker](https://github.com/Kurento/bugtracker/issues)
-* [Support](http://doc-kurento.readthedocs.io/en/stable/user/support.html)
-
-News:
-
-* [Kurento Blog](https://www.kurento.org/blog)
-* [Google Groups](https://groups.google.com/forum/#!forum/kurento)
-
-
-
-Source
-------
-
-All source code belonging to the Kurento project can be found in the [Kurento GitHub organization page].
-
-[Kurento GitHub organization page]: https://github.com/Kurento
-
-
-
-Licensing and distribution
---------------------------
-
-Copyright 2018 Kurento
-
-Licensed under the Apache License, Version 2.0 (the "License");
-you may not use this file except in compliance with the License.
-You may obtain a copy of the License at
-
-    http://www.apache.org/licenses/LICENSE-2.0
-
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License.

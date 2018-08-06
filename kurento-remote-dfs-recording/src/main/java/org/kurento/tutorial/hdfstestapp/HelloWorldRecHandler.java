@@ -56,6 +56,7 @@ import com.google.gson.JsonObject;
  */
 public class HelloWorldRecHandler extends TextWebSocketHandler {
 
+  //Path en donde corre el video server
   private static final String RECORDER_FILE_PATH = "file:///tmp/HelloWorldRecorded.webm";
 
   private final Logger log = LoggerFactory.getLogger(HelloWorldRecHandler.class);
